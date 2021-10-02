@@ -47,6 +47,14 @@ jobs:
         PY_VER: ${{ matrix.python-version }}
         ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
 
+    - name: Run tests with caget
+      run: |
+        source $CONDA/bin/activate $ENV_NAME
+        caget gp:UPTIME
+      env:
+        PY_VER: ${{ matrix.python-version }}
+        ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
+
     - name: Run tests with pytest
       run: |
         source $CONDA/bin/activate $ENV_NAME
