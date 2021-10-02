@@ -25,6 +25,10 @@ jobs:
         mamba-version: "*"
         use-only-tar-bz2: true  # required for caching
 
+    - name: Check Docker
+      run: |
+        docker ps -a
+
     - shell: bash -l {0}
       run: |
         conda info
