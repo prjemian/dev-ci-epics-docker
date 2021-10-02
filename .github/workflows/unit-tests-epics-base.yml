@@ -1,4 +1,4 @@
-name: EPICS base Tests
+name: EPICS Base Tests
 
 # see: GitHub Actions: Service Containers
  #  https://docs.github.com/en/enterprise-server@3.0/actions/using-containerized-services/about-service-containers
@@ -7,12 +7,8 @@ on: [push]
 
 jobs:
   build-linux:
-    name: CI py${{ matrix.python-version }}
+    name: EPICS Base - caget
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.7', '3.8', '3.9']
-      max-parallel: 5
 
     steps:
     - uses: actions/checkout@v2
@@ -21,14 +17,14 @@ jobs:
       uses: conda-incubator/setup-miniconda@v2
       with:
         activate-environment:
-            anaconda-test-env-py-${{ matrix.python-version }}
+            anaconda-test-env
         auto-update-conda: true
         channel-priority: true
         channels: defaults,conda-forge
         # environment-file: environment.yml
         mamba-version: "*"
-        python-version: ${{ matrix.python-version }}
         use-only-tar-bz2: true  # required for caching
+
     - shell: bash -l {0}
       run: |
         conda info
@@ -38,21 +34,16 @@ jobs:
         conda env list
         printenv | sort
 
-    # $CONDA is an environment variable pointing to the
-    # root of the miniconda directory
-
     - name: Install dependencies
       run: |
         $CONDA/bin/conda install epics-base --name $ENV_NAME
         $CONDA/bin/conda list -r --name $ENV_NAME
       env:
-        PY_VER: ${{ matrix.python-version }}
-        ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
+        ENV_NAME: anaconda-test-env
 
     - name: Run tests with caget
       run: |
         source $CONDA/bin/activate $ENV_NAME
         caget gp:UPTIME
       env:
-        PY_VER: ${{ matrix.python-version }}
-        ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
+        ENV_NAME: anaconda-test-env
