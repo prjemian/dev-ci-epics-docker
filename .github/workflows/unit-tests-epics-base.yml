@@ -1,4 +1,7 @@
-name: Unit Tests
+name: EPICS base Tests
+
+# see: GitHub Actions: Service Containers
+ #  https://docs.github.com/en/enterprise-server@3.0/actions/using-containerized-services/about-service-containers
 
 on: [push]
 
@@ -40,17 +43,16 @@ jobs:
 
     - name: Install dependencies
       run: |
-        $CONDA/bin/conda env update --file environment.yml --name $ENV_NAME
-        $CONDA/bin/conda install pytest --name $ENV_NAME
+        $CONDA/bin/conda install epics-base --name $ENV_NAME
         $CONDA/bin/conda list -r --name $ENV_NAME
       env:
         PY_VER: ${{ matrix.python-version }}
         ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
 
-    - name: Run tests with pytest
+    - name: Run tests with caget
       run: |
         source $CONDA/bin/activate $ENV_NAME
-        pytest -vvv ./tests
+        caget gp:UPTIME
       env:
         PY_VER: ${{ matrix.python-version }}
         ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
