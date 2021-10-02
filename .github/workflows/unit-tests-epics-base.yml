@@ -44,6 +44,7 @@ jobs:
     - name: Run tests with caget
       run: |
         source $CONDA/bin/activate $ENV_NAME
+        which caget
         caget gp:UPTIME
       env:
         ENV_NAME: anaconda-test-env
