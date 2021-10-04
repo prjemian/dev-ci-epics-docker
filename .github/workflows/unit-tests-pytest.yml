@@ -41,7 +41,6 @@ jobs:
         bash ./.github/scripts/start_xxx.sh gp
         docker ps -a
 
-
     # $CONDA is an environment variable pointing to the
     # root of the miniconda directory
 
@@ -50,6 +49,24 @@ jobs:
         $CONDA/bin/conda env update --file environment.yml --name $ENV_NAME
         $CONDA/bin/conda install pytest --name $ENV_NAME
         $CONDA/bin/conda list -r --name $ENV_NAME
+      env:
+        PY_VER: ${{ matrix.python-version }}
+        ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
+
+    - name: Confirm IOC is available
+      run: |
+        source $CONDA/bin/activate $ENV_NAME
+        # EPICS base test
+        PV=gp:UPTIME
+        caget "${PV}"
+        # PyEpics test
+        python -c "import epics; epics.caget('${PV}')"
+        # ophyd test
+        CMD="import ophyd"
+        CMD+="; up = ophyd.EpicsSignalRO('${PV}', name='up')"
+        CMD+="; up.wait_for_connection()"
+        CMD+="; up.get()"
+        python -c "${CMD}"
       env:
         PY_VER: ${{ matrix.python-version }}
         ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
