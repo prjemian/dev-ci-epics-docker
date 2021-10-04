@@ -36,9 +36,7 @@ jobs:
 
     - name: Start IOC in Docker
       run: |
-        pwd
-        ls -lAFgh
-        bash ../scripts/start_xxx.sh gp
+        bash ./.github/scripts/start_xxx.sh gp
         docker ps -a
 
     - name: Install dependencies
