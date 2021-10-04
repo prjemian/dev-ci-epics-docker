@@ -53,23 +53,36 @@ jobs:
         PY_VER: ${{ matrix.python-version }}
         ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
 
-    - name: Confirm IOC is available
+    - name: Confirm IOC is available via caget
       run: |
         source $CONDA/bin/activate $ENV_NAME
-        # EPICS base test
-        PV=gp:UPTIME
         caget "${PV}"
-        # PyEpics test
-        python -c "import epics; epics.caget('${PV}')"
-        # ophyd test
+      env:
+        PY_VER: ${{ matrix.python-version }}
+        ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
+        PV: gp:UPTIME
+
+    - name: Confirm IOC is available via PyEpics
+      run: |
+        source $CONDA/bin/activate $ENV_NAME
+        python -c "import epics; print(epics.caget('${PV}'))"
+      env:
+        PY_VER: ${{ matrix.python-version }}
+        ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
+        PV: gp:UPTIME
+
+    - name: Confirm IOC is available via ophyd
+      run: |
+        source $CONDA/bin/activate $ENV_NAME
         CMD="import ophyd"
         CMD+="; up = ophyd.EpicsSignalRO('${PV}', name='up')"
         CMD+="; up.wait_for_connection()"
-        CMD+="; up.get()"
+        CMD+="; print(up.get())"
         python -c "${CMD}"
       env:
         PY_VER: ${{ matrix.python-version }}
         ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
+        PV: gp:UPTIME
 
     - name: Run tests with pytest
       run: |
