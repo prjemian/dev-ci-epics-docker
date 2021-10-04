@@ -25,13 +25,6 @@ jobs:
         mamba-version: "*"
         use-only-tar-bz2: true  # required for caching
 
-    - name: Start IOC in Docker
-      run: |
-        docker ps -a
-        wget https://raw.githubusercontent.com/prjemian/epics-docker/main/v1.1/n5_custom_synApps/start_xxx.sh
-        bash ./start_xxx.sh gp
-        docker ps -a
-
     - shell: bash -l {0}
       run: |
         conda info
@@ -40,6 +33,11 @@ jobs:
         conda config --show
         conda env list
         printenv | sort
+
+    - name: Start IOC in Docker
+      run: |
+        bash ../scripts/start_xxx.sh gp
+        docker ps -a
 
     - name: Install dependencies
       run: |
